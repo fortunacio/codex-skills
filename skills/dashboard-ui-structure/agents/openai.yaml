@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dashboard UI Structure"
+  short_description: "Rules for clear dashboard app layouts"
+  default_prompt: "Use $dashboard-ui-structure to design or review an authenticated dashboard UI with clear hierarchy and stable layout."

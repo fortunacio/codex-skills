@@ -1,0 +1,4 @@
+interface:
+  display_name: "Monorepo FastAPI React"
+  short_description: "Opinionated monorepo stack conventions"
+  default_prompt: "Use $monorepo-fastapi-react to define architecture and AGENTS.md for a new FastAPI + React monorepo."
