@@ -1,60 +1,118 @@
 # Codex Skills
 
-Repositorio Git dedicado para mantener skills custom de Codex.
+Repository for maintaining custom Codex skills using native discovery.
 
-## Estructura
+## Quick Install
+
+```bash
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+git clone https://github.com/fortunacio/codex-skills.git "${HOME}/.codex/codex-skills"
+ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+```
+
+## Manual Installation
+
+### Requirements
+
+- Codex
+- Git
+
+### Steps
+
+1. Clone the repo:
+
+   ```bash
+   git clone https://github.com/fortunacio/codex-skills.git "${HOME}/.codex/codex-skills"
+   ```
+
+2. Create the symlink:
+
+   ```bash
+   mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+   ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+   ```
+
+3. Restart Codex.
+
+If the destination already exists, replace it before recreating the link.
+
+Replace an existing install:
+
+```bash
+rm -f "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+```
+
+### Windows
+
+Use a junction:
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills"
+git clone https://github.com/fortunacio/codex-skills.git "$env:USERPROFILE\.codex\codex-skills"
+cmd /c mklink /J "$env:USERPROFILE\.codex\skills\woolleg" "$env:USERPROFILE\.codex\codex-skills\skills"
+```
+
+## How It Works
+
+Codex discovers skills at startup by reading `SKILL.md` files inside `${CODEX_HOME:-~/.codex}/skills`.
+
+This repo exposes all its skills through a single link:
+
+```text
+~/.codex/skills/woolleg -> ~/.codex/codex-skills/skills
+```
+
+`skills/` remains the source of truth. The directory inside `~/.codex/skills` is only the discovery entry point.
+
+## Structure
 
 ```text
 .
-├── skills/
-│   └── <skill-name>/
-│       ├── SKILL.md
-│       ├── agents/openai.yaml
-│       ├── references/        # opcional
-│       ├── scripts/           # opcional
-│       └── assets/            # opcional
-└── scripts/
-    ├── publish-skills.sh
-    └── validate-skills.sh
+├── README.md
+└── skills/
+    └── <skill-name>/
+        ├── SKILL.md
+        ├── agents/openai.yaml
+        ├── references/        # optional
+        ├── scripts/           # optional
+        └── assets/            # optional
 ```
 
-`skills/` es la fuente de verdad. `~/.codex/skills` queda sólo como instalación global.
+## Usage
 
-## Uso
+Skills activate automatically when:
 
-Validar estructura local:
+- you mention a skill by name
+- the task matches the frontmatter description
+
+After adding a new skill, renaming an existing one, or changing metadata, restart Codex to force a new discovery pass.
+
+## Updating
 
 ```bash
-./scripts/validate-skills.sh
+cd "${HOME}/.codex/codex-skills"
+git pull
 ```
 
-Validar además la instalación global:
+Changes become available through the same symlink.
+
+## Uninstalling
 
 ```bash
-./scripts/validate-skills.sh --installed
+rm -f "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
 ```
 
-Publicar todas las skills del repo a `~/.codex/skills`:
+Delete the repo clone as well:
 
 ```bash
-./scripts/publish-skills.sh --force
+rm -rf "${HOME}/.codex/codex-skills"
 ```
 
-Publicar una skill puntual:
+## Troubleshooting
 
-```bash
-./scripts/publish-skills.sh dashboard-ui-structure --force
-```
+### Skills are not showing up
 
-Después de agregar una skill nueva, renombrar una existente o cambiar metadata, conviene reiniciar Codex.
-
-## Flujo recomendado
-
-```bash
-./scripts/validate-skills.sh
-./scripts/publish-skills.sh dashboard-ui-structure --force
-git status
-git add .
-git commit -m "..."
-git push
-```
+1. Verify the link: `ls -la ~/.codex/skills/woolleg`
+2. Verify that skills exist inside the repo: `find ~/.codex/codex-skills/skills -mindepth 1 -maxdepth 1 -type d`
+3. Restart Codex
