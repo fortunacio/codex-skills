@@ -5,16 +5,16 @@ Repository for maintaining custom Codex skills using native discovery.
 ## Quick Install
 
 ```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-git clone https://github.com/fortunacio/codex-skills.git "${HOME}/.codex/codex-skills"
-ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+git clone https://github.com/fortunacio/codex-skills.git ~/.codex/codex-skills
+mkdir -p ~/.agents/skills
+ln -s ~/.codex/codex-skills/skills ~/.agents/skills/codex-skills
 ```
 
 ## Manual Installation
 
 ### Requirements
 
-- Codex
+- OpenAI Codex CLI
 - Git
 
 ### Steps
@@ -22,48 +22,39 @@ ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/w
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/fortunacio/codex-skills.git "${HOME}/.codex/codex-skills"
+   git clone https://github.com/fortunacio/codex-skills.git ~/.codex/codex-skills
    ```
 
-2. Create the symlink:
+2. Create the skills symlink:
 
    ```bash
-   mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-   ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+   mkdir -p ~/.agents/skills
+   ln -s ~/.codex/codex-skills/skills ~/.agents/skills/codex-skills
    ```
 
 3. Restart Codex.
-
-If the destination already exists, replace it before recreating the link.
-
-Replace an existing install:
-
-```bash
-rm -f "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
-ln -s "${HOME}/.codex/codex-skills/skills" "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
-```
 
 ### Windows
 
 Use a junction:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills"
 git clone https://github.com/fortunacio/codex-skills.git "$env:USERPROFILE\.codex\codex-skills"
-cmd /c mklink /J "$env:USERPROFILE\.codex\skills\woolleg" "$env:USERPROFILE\.codex\codex-skills\skills"
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.agents\skills"
+cmd /c mklink /J "$env:USERPROFILE\.agents\skills\codex-skills" "$env:USERPROFILE\.codex\codex-skills\skills"
 ```
 
 ## How It Works
 
-Codex discovers skills at startup by reading `SKILL.md` files inside `${CODEX_HOME:-~/.codex}/skills`.
+Codex has native skill discovery. It scans `~/.agents/skills/` at startup, parses `SKILL.md` frontmatter, and loads matching skills on demand.
 
 This repo exposes all its skills through a single link:
 
 ```text
-~/.codex/skills/woolleg -> ~/.codex/codex-skills/skills
+~/.agents/skills/codex-skills/ -> ~/.codex/codex-skills/skills/
 ```
 
-`skills/` remains the source of truth. The directory inside `~/.codex/skills` is only the discovery entry point.
+`skills/` remains the source of truth. The directory inside `~/.agents/skills` is only the discovery entry point.
 
 ## Structure
 
@@ -86,12 +77,12 @@ Skills activate automatically when:
 - you mention a skill by name
 - the task matches the frontmatter description
 
-After adding a new skill, renaming an existing one, or changing metadata, restart Codex to force a new discovery pass.
+After adding a new skill, renaming an existing one, or changing metadata, restart Codex.
 
 ## Updating
 
 ```bash
-cd "${HOME}/.codex/codex-skills"
+cd ~/.codex/codex-skills
 git pull
 ```
 
@@ -100,19 +91,23 @@ Changes become available through the same symlink.
 ## Uninstalling
 
 ```bash
-rm -f "${CODEX_HOME:-$HOME/.codex}/skills/woolleg"
+rm ~/.agents/skills/codex-skills
 ```
 
 Delete the repo clone as well:
 
 ```bash
-rm -rf "${HOME}/.codex/codex-skills"
+rm -rf ~/.codex/codex-skills
 ```
 
 ## Troubleshooting
 
 ### Skills are not showing up
 
-1. Verify the link: `ls -la ~/.codex/skills/woolleg`
-2. Verify that skills exist inside the repo: `find ~/.codex/codex-skills/skills -mindepth 1 -maxdepth 1 -type d`
+1. Verify the symlink: `ls -la ~/.agents/skills/codex-skills`
+2. Check skills exist: `ls ~/.codex/codex-skills/skills`
 3. Restart Codex
+
+## Getting Help
+
+- Main repository: https://github.com/fortunacio/codex-skills
